@@ -544,12 +544,7 @@ def build_html_page(data, out_path):
 
         // --- Load Solutions Count ---
         async function loadAllSolutionsCount() {{
-            let localSolutions = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
             let countMap = {{}};
-            
-            localSolutions.forEach(s => {{
-                countMap[s.exam_id] = (countMap[s.exam_id] || 0) + 1;
-            }});
 
             if (supabaseClient) {{
                 try {{
@@ -563,8 +558,17 @@ def build_html_page(data, out_path):
                         }});
                     }}
                 }} catch (e) {{
-                    console.warn('Could not fetch cloud solutions count:', e);
+                    console.warn('Could not fetch cloud solutions count, fallback to local:', e);
+                    const localSolutions = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
+                    localSolutions.forEach(s => {{
+                        countMap[s.exam_id] = (countMap[s.exam_id] || 0) + 1;
+                    }});
                 }}
+            }} else {{
+                const localSolutions = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
+                localSolutions.forEach(s => {{
+                    countMap[s.exam_id] = (countMap[s.exam_id] || 0) + 1;
+                }});
             }}
 
             state.solutionsCountMap = countMap;
@@ -983,12 +987,6 @@ def build_html_page(data, out_path):
 
             let solutions = [];
 
-            // 1. Get from LocalStorage
-            const allLocal = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
-            const localSolutions = allLocal.filter(s => s.exam_id === examId);
-            solutions.push(...localSolutions);
-
-            // 2. Get from Supabase if connected
             if (supabaseClient) {{
                 try {{
                     const {{ data, error }} = await supabaseClient
@@ -998,11 +996,19 @@ def build_html_page(data, out_path):
                         .order('created_at', {{ ascending: false }});
 
                     if (!error && data) {{
-                        solutions = data; // Cloud is source of truth
+                        solutions = data;
+                    }} else {{
+                        const allLocal = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
+                        solutions = allLocal.filter(s => s.exam_id === examId);
                     }}
                 }} catch (e) {{
                     console.warn('Could not fetch from Supabase, using local:', e);
+                    const allLocal = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
+                    solutions = allLocal.filter(s => s.exam_id === examId);
                 }}
+            }} else {{
+                const allLocal = JSON.parse(localStorage.getItem('local_exam_solutions') || '[]');
+                solutions = allLocal.filter(s => s.exam_id === examId);
             }}
 
             state.solutionsMap[examId] = solutions;
