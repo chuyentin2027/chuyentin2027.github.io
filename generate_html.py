@@ -160,15 +160,10 @@ def build_html_page(data, out_path):
                 <div class="flex items-center gap-2">
                     <!-- Database Status Button -->
                     <button onclick="openConfigModal()" id="db-status-btn" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-2xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition" title="Cấu hình Cloud Database Supabase">
-                        <span id="db-status-dot" class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span id="db-status-text" class="hidden sm:inline">Database: Offline (Local)</span>
+                        <span id="db-status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <span id="db-status-text" class="hidden sm:inline">Database: Supabase Cloud</span>
                         <i class="fa-solid fa-gear text-[10px] text-slate-400"></i>
                     </button>
-
-                    <a href="dethi/" class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition">
-                        <i class="fa-solid fa-folder-open text-xs"></i>
-                        <span class="hidden sm:inline">Thư mục /dethi</span>
-                    </a>
                 </div>
             </div>
         </header>
@@ -492,17 +487,23 @@ def build_html_page(data, out_path):
             loadAllSolutionsCount();
         }});
 
+        const DEFAULT_SUPABASE_URL = "https://hlaoffzalogrybprbvrr.supabase.co";
+        const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsYW9mZnphbG9ncnlicHJidnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMjQyMDYsImV4cCI6MjEwNjYwMDIwNn0.kLuhercJOYnUgmQFoEF9NiRLJIe5g-bK-CgfF1U2gRU";
+
         // --- Supabase / Storage Initialization ---
         function initSupabase() {{
-            const storedUrl = localStorage.getItem('supabase_url') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.url : '');
-            const storedKey = localStorage.getItem('supabase_anon_key') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.anonKey : '');
+            const storedUrl = localStorage.getItem('supabase_url');
+            const storedKey = localStorage.getItem('supabase_anon_key');
+
+            const url = (storedUrl && storedUrl.startsWith('http')) ? storedUrl : (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) || DEFAULT_SUPABASE_URL;
+            const key = (storedKey && storedKey.length > 20) ? storedKey : (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.anonKey) || DEFAULT_SUPABASE_ANON_KEY;
 
             const statusDot = document.getElementById('db-status-dot');
             const statusText = document.getElementById('db-status-text');
 
-            if (storedUrl && storedKey && window.supabase) {{
+            if (url && key && window.supabase) {{
                 try {{
-                    supabaseClient = window.supabase.createClient(storedUrl, storedKey);
+                    supabaseClient = window.supabase.createClient(url, key);
                     statusDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
                     statusText.textContent = 'Database: Supabase Cloud';
                 }} catch (e) {{
@@ -517,8 +518,8 @@ def build_html_page(data, out_path):
         }}
 
         function openConfigModal() {{
-            document.getElementById('cfg-supabase-url').value = localStorage.getItem('supabase_url') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.url : '');
-            document.getElementById('cfg-supabase-key').value = localStorage.getItem('supabase_anon_key') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.anonKey : '');
+            document.getElementById('cfg-supabase-url').value = localStorage.getItem('supabase_url') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.url : '') || DEFAULT_SUPABASE_URL;
+            document.getElementById('cfg-supabase-key').value = localStorage.getItem('supabase_anon_key') || (window.SUPABASE_CONFIG ? window.SUPABASE_CONFIG.anonKey : '') || DEFAULT_SUPABASE_ANON_KEY;
             document.getElementById('config-modal').classList.remove('hidden');
         }}
 
