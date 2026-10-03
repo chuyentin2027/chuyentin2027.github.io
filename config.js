@@ -1,14 +1,8 @@
 // ==============================================================================
 // CẤU HÌNH KẾT NỐI SUPABASE CHO HỆ THỐNG ĐỀ THI CHUYÊN TIN
 // ==============================================================================
-// Điền thông tin Project của bạn từ trang Supabase Dashboard (Settings -> API)
-// Nếu để trống, hệ thống sẽ tự động chuyển sang chế độ lưu trữ LocalStorage (Offline).
-// ==============================================================================
 
 window.SUPABASE_CONFIG = {
-    // Ví dụ: "https://abcdefghijklmnopqrst.supabase.co"
-    url: "", 
-
-    // Ví dụ: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    anonKey: ""
+    url: "https://hlaoffzalogrybprbvrr.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsYW9mZnphbG9ncnlicHJidnJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMjQyMDYsImV4cCI6MjEwNjYwMDIwNn0.kLuhercJOYnUgmQFoEF9NiRLJIe5g-bK-CgfF1U2gRU"
 };
